@@ -17,7 +17,7 @@ git clone https://github.com/wesleyara/linux-boostrap.git ~/linux-bootstrap && b
 | `fonts`  | JetBrains Mono |
 | `apps`   | Claude Code, VS Code, Chrome, Discord |
 | `node`   | nvm + versão do Node escolhida (+ yarn/pnpm) |
-| `repos`  | DockerLocal (`:5100`), ClickLocal (`:8880`), Wttp e gnome-shell-pano (só GNOME) em `~/dev` |
+| `repos`  | DockerLocal (`:5100`), ClickLocal (`:8880`), DbLocal (comando `dblocal`, `:5555`), Wttp, TextShot e gnome-shell-pano (só GNOME) em `~/dev` |
 
 ## Opções
 
@@ -33,10 +33,10 @@ senha do sudo e, opcionalmente, login do `gh`).
 ## Reinícios
 
 Ao final, o bloco **AÇÃO NECESSÁRIA** lista o que exige logout/login:
-shell padrão (zsh), grupo `docker` e a extensão Pano. O script oferece encerrar a sessão, nunca automaticamente.
+shell padrão (zsh), grupo `docker` e as extensões Pano e TextShot. O script oferece encerrar a sessão, nunca automaticamente.
 
 ## Notas
 - Idempotente: pode ser executado várias vezes.
-- Em WSL, apps gráficos, fontes e Pano são pulados.
+- Em WSL, apps gráficos, fontes, Pano e TextShot são pulados.
 - Chrome/VS Code no Arch exigem `yay`/`paru` (AUR); há fallback via Flatpak para o VS Code.
 - O app desktop do Claude não tem pacote oficial Linux; instala-se o Claude Code (CLI).

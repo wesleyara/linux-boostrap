@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Clona e instala DockerLocal, ClickLocal, Wttp e gnome-shell-pano.
+# Clona e instala DockerLocal, ClickLocal, DbLocal, Wttp, TextShot e gnome-shell-pano.
 
 REPOS_DIR=${REPOS_DIR:-$HOME/dev}
 
@@ -63,6 +63,41 @@ _repo_clicklocal() {
   else
     warn "ClickLocal subiu, mas a porta 8880 não respondeu. Veja: docker compose logs"
   fi
+}
+
+_repo_dblocal() {
+  local dir=$REPOS_DIR/DbLocal
+  clone_or_update https://github.com/wesleyara/DbLocal.git "$dir" || return 1
+  load_nvm || { err "nvm indisponível: rode o passo 'node' antes."; return 1; }
+  (cd "$dir" && pnpm install && pnpm build) || return 1
+  mkdir -p "$HOME/.local/bin"
+  ln -sfn "$dir/bin/dblocal.mjs" "$HOME/.local/bin/dblocal"
+  ok "DbLocal instalado: rode 'dblocal' (http://127.0.0.1:5555)."
+}
+
+_repo_textshot() {
+  if ! is_gnome; then
+    warn "GNOME não detectado; pulando TextShot."
+    SKIP_LIST+=("TextShot (ambiente não é GNOME)")
+    return 0
+  fi
+
+  info "Instalando Tesseract (OCR)..."
+  case $PKG in
+    apt)    pkg_install tesseract-ocr tesseract-ocr-eng tesseract-ocr-por zip ;;
+    dnf)    pkg_install tesseract tesseract-langpack-eng tesseract-langpack-por zip ;;
+    pacman) pkg_install tesseract tesseract-data-eng tesseract-data-por zip ;;
+  esac || return 1
+
+  local dir=$REPOS_DIR/TextShot
+  clone_or_update https://github.com/wesleyara/TextShot.git "$dir" || return 1
+  (cd "$dir" && make install) || return 1
+  if gnome-extensions enable textshot@wesleyara 2>/dev/null; then
+    ok "Extensão TextShot habilitada."
+  else
+    warn "Habilite após o relogin: gnome-extensions enable textshot@wesleyara"
+  fi
+  need_restart "Faça LOGOUT/LOGIN para o GNOME Shell carregar a extensão TextShot (Super+Shift+T)."
 }
 
 _repo_wttp() {
@@ -153,10 +188,10 @@ _repo_pano() {
 step_repos() {
   mkdir -p "$REPOS_DIR"
   local failed=() r
-  for r in dockerlocal clicklocal wttp pano; do
+  for r in dockerlocal clicklocal dblocal wttp textshot pano; do
     section "Repositório: $r"
-    if is_wsl && [[ $r == pano ]]; then
-      warn "WSL: pulando gnome-shell-pano."
+    if is_wsl && [[ $r == pano || $r == textshot ]]; then
+      warn "WSL: pulando extensões GNOME ($r)."
       continue
     fi
     "_repo_$r" || { err "Falha em $r."; failed+=("$r"); }
