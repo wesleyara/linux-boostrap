@@ -23,7 +23,7 @@ declare -A STEP_LABEL=(
   [fonts]="JetBrains Mono"
   [apps]="Claude Code, VS Code, Chrome, Discord"
   [node]="nvm + Node (você escolhe a versão)"
-  [repos]="DockerLocal, ClickLocal, Wttp e gnome-shell-pano"
+  [repos]="DockerLocal, ClickLocal, DbLocal, Wttp, TextShot e gnome-shell-pano"
 )
 declare -A SELECTED=()
 for id in "${STEP_IDS[@]}"; do SELECTED[$id]=1; done
